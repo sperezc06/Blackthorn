@@ -155,6 +155,7 @@ Created when you run tests. **Do not edit.** In [`.gitignore`](.gitignore) — n
 2. **FakeStore 404 behavior** — Non-existent IDs return HTTP 200 with empty body.
 3. **Empty cart** — Checkout button stays visible; we assert zero cart items.
 4. **Screenshots** — Each UI step attaches a screenshot to the Monocart report (`Step 1: …`, `Step 2: …`, etc.).
+5. **FakeStore in CI** — FakeStore may block GitHub Actions IPs (Cloudflare 403). API tests pass locally (`npm run test:api`); CI runs UI cross-browser as the primary gate.
 
 ## Credentials
 
