@@ -11,16 +11,22 @@ export interface FakeStoreProduct {
 }
 
 export class FakeStoreClient {
+  private readonly defaultHeaders = {
+    Accept: 'application/json',
+    'User-Agent':
+      'Mozilla/5.0 (compatible; SauceDemo-QA/1.0; +https://github.com/sperezc06/Blackthorn)',
+  };
+
   constructor(
     private readonly request: APIRequestContext,
     private readonly baseURL: string = FAKESTORE_URL,
   ) {}
 
   async getProducts(): Promise<APIResponse> {
-    return this.request.get(`${this.baseURL}/products`);
+    return this.request.get(`${this.baseURL}/products`, { headers: this.defaultHeaders });
   }
 
   async getProductById(id: number): Promise<APIResponse> {
-    return this.request.get(`${this.baseURL}/products/${id}`);
+    return this.request.get(`${this.baseURL}/products/${id}`, { headers: this.defaultHeaders });
   }
 }
