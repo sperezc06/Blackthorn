@@ -40,8 +40,8 @@ npx playwright install chromium firefox webkit
 | Command | What it does |
 |---------|--------------|
 | **`npm run test:demo`** | **Recommended for demos** — **Chromium only**, headed, slowed down, red highlights + test name. Does **not** run Firefox/WebKit (use `npm test` for cross-browser). |
-| `npm test` | Full suite — all UI scenarios × **3 browsers** (Chromium, Firefox, WebKit) + API tests. Headless. Use for CI and final validation. |
-| `npm run test:ui` | UI tests only — headless, **Chromium + Firefox + WebKit** (33 runs). |
+| `npm test` | Full suite locally — UI × 3 browsers + API tests. Headless. |
+| `npm run test:ui` | UI tests only — headless, **Chromium + Firefox + WebKit** (33 runs). **This is what GitHub Actions runs on push.** |
 | `npm run test:api` | API tests only — FakeStore endpoints, Chromium. |
 | `npm run report` | Opens the Monocart HTML report from the last test run. |
 
@@ -92,18 +92,19 @@ npm run report
 
 Monocart shows a clear dashboard: which tests passed or failed, **screenshots after each Gherkin step**, videos on failures, and breakdown by browser. No extra setup — it generates automatically on every run into `monocart-report/`.
 
-## CI pipeline (example — not active by default)
+## CI on GitHub (tests only — not deployment)
 
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) is an **example** of how you would run tests automatically in a real team setup. It is **not deployment** — it does not publish the app anywhere.
+**This is CI, not CD.** There is no deploy step — nothing gets published to a server. Every push to `main` only **runs the automated tests** to catch regressions early.
 
-**What it would do** if this repo were pushed to GitHub and Actions were enabled:
+**What happens when you push:**
 
-1. Trigger on push/PR to `main` or `master`
-2. Install dependencies and Playwright browsers
-3. Run `npm test`
-4. Upload the Monocart report as a CI artifact
+1. GitHub Actions starts (see [Actions tab](https://github.com/sperezc06/Blackthorn/actions))
+2. Installs dependencies + Playwright browsers on a clean Ubuntu machine
+3. Runs **`npm run test:ui`** — 11 UI scenarios × 3 browsers (33 tests). **If this fails, the workflow fails.**
+4. Tries **`npm run test:api`** — optional in CI (FakeStore often blocks GitHub IPs via Cloudflare). Run locally with `npm run test:api` to validate API tests.
+5. Uploads the **Monocart report** as a downloadable artifact (14 days)
 
-**Today:** tests run locally with `npm test`. The workflow is included to show CI-ready structure for a production QA process, but nothing runs until the project lives on GitHub with Actions turned on.
+Config: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 
 ## Project Structure
 
@@ -119,7 +120,7 @@ Monocart shows a clear dashboard: which tests passed or failed, **screenshots af
 | [`config/`](config/) | Shared test data (users, products, messages) |
 | [`docs/`](docs/) | Test plan and Gherkin scenario docs |
 | [`playwright.config.ts`](playwright.config.ts) | Browsers, reporters, timeouts |
-| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Example CI (not deployment) |
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | GitHub Actions — runs UI tests on every push to `main` |
 
 ### Auto-generated — ignore these
 
