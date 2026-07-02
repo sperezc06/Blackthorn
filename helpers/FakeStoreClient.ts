@@ -23,10 +23,10 @@ export class FakeStoreClient {
   ) {}
 
   async getProducts(): Promise<APIResponse> {
-    return this.request.get(`${this.baseURL}/products`, { headers: this.defaultHeaders });
+    return this.request.get('/products', { headers: this.defaultHeaders });
   }
 
   async getProductById(id: number): Promise<APIResponse> {
-    return this.request.get(`${this.baseURL}/products/${id}`, { headers: this.defaultHeaders });
+    return this.request.get(`/products/${id}`, { headers: this.defaultHeaders });
   }
 }

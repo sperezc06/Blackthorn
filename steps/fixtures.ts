@@ -1,6 +1,6 @@
 import { APIResponse } from '@playwright/test';
 import { test as base, createBdd } from 'playwright-bdd';
-import { PRODUCTS, USERS } from '../config/test-data';
+import { FAKESTORE_URL, PRODUCTS, USERS } from '../config/test-data';
 import { FakeStoreClient } from '../helpers/FakeStoreClient';
 import { CartPage } from '../pages/CartPage';
 import { CheckoutPage } from '../pages/CheckoutPage';
@@ -23,8 +23,18 @@ export const test = base.extend<{
   testContext: async ({}, use) => {
     await use({});
   },
-  fakeStore: async ({ request }, use) => {
-    await use(new FakeStoreClient(request));
+  fakeStore: async ({ playwright }, use) => {
+    const api = await playwright.request.newContext({
+      baseURL: FAKESTORE_URL,
+      userAgent:
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      extraHTTPHeaders: {
+        Accept: 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
+    });
+    await use(new FakeStoreClient(api));
+    await api.dispose();
   },
   loginPage: async ({ page }, use) => {
     await use(new LoginPage(page));
